@@ -185,6 +185,51 @@ h2.title{font-size:clamp(26px,4vw,38px);font-weight:900;line-height:1.25;margin-
 .tg--use{background:#e8f3fb;color:#1d6fa5}
 .tg--grade{background:#fcf3da;color:#9a6b00}
 .tg--theme{background:var(--mist);color:var(--sea-deep)}
+/* card action row + 備課清單(B3) + 引用(H2) */
+a.ds__name{display:block;text-decoration:none}
+a.ds__name:hover{color:var(--sea-deep)}
+.ds__act{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.actbtn{font:600 12px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+  border-radius:9px;padding:6px 10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:.15s}
+.actbtn:hover{border-color:var(--sea);color:var(--sea-deep)}
+.actbtn.star.on{background:#fff7e6;border-color:var(--gold);color:#9a6b00}
+.actbtn.ghost{margin-left:auto;color:var(--sea-deep);border-color:transparent}
+.actbtn.ghost:hover{border-color:var(--sea)}
+#pick-fab{position:fixed;right:18px;bottom:18px;z-index:9000;display:flex;align-items:center;gap:8px;
+  background:#063b4c;color:#fff;border:none;border-radius:14px;padding:12px 18px;font:700 14.5px system-ui,sans-serif;
+  cursor:pointer;box-shadow:0 14px 30px -10px rgba(6,59,76,.55);transition:.18s}
+#pick-fab:hover{transform:translateY(-2px)}
+#pick-fab.has{background:linear-gradient(135deg,#0ea5b7,#0a7d8c)}
+#pick-fab #pick-count{background:var(--gold);color:#3a2a05;border-radius:999px;min-width:22px;height:22px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;padding:0 6px}
+#pick-modal{position:fixed;inset:0;z-index:9500}
+.pm__backdrop{position:absolute;inset:0;background:rgba(6,40,52,.55)}
+.pm__panel{position:absolute;right:0;top:0;height:100%;width:min(450px,92vw);background:var(--sand);
+  box-shadow:-18px 0 50px -20px rgba(0,0,0,.5);display:flex;flex-direction:column;animation:pmIn .22s ease}
+@keyframes pmIn{from{transform:translateX(30px);opacity:.4}to{transform:none;opacity:1}}
+.pm__head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:#fff}
+.pm__head b{font-size:17px} .pm__head #pm-count{color:var(--sea-deep)}
+#pm-close{border:none;background:var(--mist);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:15px;color:var(--ink-soft)}
+.pm__body{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pm__empty{color:var(--ink-soft);font-size:14px;text-align:center;padding:40px 14px;line-height:1.8}
+.pm__item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+.pm__itop{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.pm__itop a{font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;line-height:1.5}
+.pm__itop a:hover{color:var(--sea-deep)}
+.pm__rm{border:none;background:transparent;color:var(--ink-soft);cursor:pointer;font-size:14px;flex:none;padding:2px 7px;border-radius:7px}
+.pm__rm:hover{background:#fdeee9;color:var(--coral-deep)}
+.pm__imeta{font-size:12px;color:var(--ink-soft);margin-top:6px}
+.pm__cite{font-size:11.5px;color:var(--ink-soft);background:var(--mist);border-radius:8px;padding:7px 9px;margin-top:8px;line-height:1.6;word-break:break-all}
+.pm__foot{display:flex;gap:8px;flex-wrap:wrap;padding:14px 16px;border-top:1px solid var(--line);background:#fff}
+.pm__foot button{font:700 13px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:9px 13px;cursor:pointer;transition:.15s}
+.pm__foot button:hover{border-color:var(--sea);color:var(--sea-deep)}
+.pm__foot #pm-copy{background:var(--deep);color:#fff;border-color:var(--deep)}
+.pm__foot .ghost{margin-left:auto;color:var(--ink-soft)}
+#toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);z-index:9999;background:#0c2b38;color:#fff;
+  padding:10px 18px;border-radius:11px;font:600 13.5px system-ui,sans-serif;box-shadow:0 10px 26px -10px rgba(0,0,0,.5);
+  opacity:0;transition:opacity .25s;max-width:calc(100vw - 28px);text-align:center}
+#toast.show{opacity:1}
+@media print{#pick-fab,#pick-modal,#toast,#sw-update-bar{display:none!important}}
 
 /* ===== ROADMAP ===== */
 .road{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:p}
@@ -3451,10 +3496,11 @@ function pass(it){
 }
 
 function cardHTML(it, showTheme){
+  const picked = isPicked(it.id);
   return `
-    <a class="ds" href="${DATASET_URL(it.id)}" target="_blank" rel="noopener noreferrer" title="${esc(it.desc)}">
+    <div class="ds" data-id="${esc(it.id)}">
       <span class="pill ${it.open?'pill--open':'pill--req'}">${it.open?'開放下載':'需申請'}</span>
-      <div class="ds__name">${esc(it.name)}</div>
+      <a class="ds__name" href="${DATASET_URL(it.id)}" target="_blank" rel="noopener noreferrer" title="${esc(it.desc)}">${esc(it.name)}</a>
       <div class="ds__meta">
         <span class="ds__ag">${esc(it.agency)}</span>
         ${it.size?`<span class="ds__size">${esc(it.size)}</span>`:''}
@@ -3464,8 +3510,12 @@ function cardHTML(it, showTheme){
         ${it.use?`<span class="tg tg--use">${USE_EMOJI[it.use]||''} ${esc(it.use)}</span>`:''}
         ${it.grade?`<span class="tg tg--grade">${esc(it.grade)}</span>`:''}
       </div>
-      <div class="ds__arrow">前往語料庫頁面 ↗</div>
-    </a>`;
+      <div class="ds__act">
+        <button class="actbtn star${picked?' on':''}" data-act="star">${picked?'★ 已加入':'☆ 加入清單'}</button>
+        <button class="actbtn" data-act="cite">⧉ 引用</button>
+        <a class="actbtn ghost" href="${DATASET_URL(it.id)}" target="_blank" rel="noopener noreferrer">前往 ↗</a>
+      </div>
+    </div>`;
 }
 
 function render(){
@@ -3515,6 +3565,99 @@ function render(){
     : `<div class="empty" style="grid-column:1/-1">此篩選下沒有語料，試試切換「使用方式」或關掉「只看開放」。</div>`;
 }
 
+// ===== B3 我的備課清單 + H2 引用格式產生器 =====
+const ITEM_BY_ID = {};
+ALL.forEach(it => { ITEM_BY_ID[it.id] = it; });
+const TODAY_ZH = '2026年6月4日';
+let pick = [];
+try { pick = JSON.parse(localStorage.getItem('taic_picklist_v1') || '[]'); } catch(e){ pick = []; }
+pick = pick.filter(id => ITEM_BY_ID[id]);   // 清掉已不存在的 id
+
+function isPicked(id){ return pick.indexOf(id) >= 0; }
+function savePick(){ try{ localStorage.setItem('taic_picklist_v1', JSON.stringify(pick)); }catch(e){} }
+function togglePick(id){
+  const i = pick.indexOf(id);
+  if(i>=0) pick.splice(i,1); else pick.push(id);
+  savePick(); updatePickUI(); refreshStars();
+}
+function citeOf(it){
+  return `${it.name}（${it.agency}）。臺灣主權 AI 訓練語料庫，數位發展部。檢索自 ${DATASET_URL(it.id)}（檢索日期：${TODAY_ZH}）`;
+}
+function copyText(str){
+  if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(str);
+  return new Promise(function(res){ var ta=document.createElement('textarea'); ta.value=str; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); res(); });
+}
+function toast(msg){
+  var t=document.getElementById('toast'); if(!t) return;
+  t.textContent=msg; t.hidden=false; void t.offsetWidth; t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){t.hidden=true;},260); },1700);
+}
+function refreshStars(){
+  document.querySelectorAll('#dsgrid .ds').forEach(function(card){
+    var id=card.getAttribute('data-id'); var btn=card.querySelector('[data-act="star"]');
+    if(btn){ var on=isPicked(id); btn.classList.toggle('on',on); btn.textContent=on?'★ 已加入':'☆ 加入清單'; }
+  });
+}
+function updatePickUI(){
+  var n=pick.length, fab=document.getElementById('pick-fab');
+  var pc=document.getElementById('pick-count'), pmc=document.getElementById('pm-count');
+  if(pc) pc.textContent=n; if(pmc) pmc.textContent=n;
+  if(fab) fab.classList.toggle('has', n>0);
+}
+function renderPickList(){
+  var box=document.getElementById('pm-list');
+  if(!pick.length){ box.innerHTML='<div class="pm__empty">還沒有收藏語料。<br>在卡片上點「☆ 加入清單」，把備課要用的語料存起來，<br>之後可一次複製引用或匯出成文字檔。</div>'; return; }
+  box.innerHTML=pick.map(function(id){ var it=ITEM_BY_ID[id]; if(!it) return '';
+    return '<div class="pm__item"><div class="pm__itop"><a href="'+DATASET_URL(it.id)+'" target="_blank" rel="noopener noreferrer">'+esc(it.name)+'</a><button class="pm__rm" data-rm="'+esc(it.id)+'" aria-label="移除">✕</button></div>'+
+      '<div class="pm__imeta">'+(it._themeEmoji||'')+' '+esc(it._themeName||'')+'｜'+esc(it.agency)+'｜'+(it.open?'開放下載':'需申請')+'</div>'+
+      '<div class="pm__cite">'+esc(citeOf(it))+'</div></div>';
+  }).join('');
+  box.querySelectorAll('[data-rm]').forEach(function(b){ b.onclick=function(){ togglePick(b.getAttribute('data-rm')); renderPickList(); }; });
+}
+function openPick(){ renderPickList(); document.getElementById('pick-modal').hidden=false; document.body.style.overflow='hidden'; }
+function closePick(){ document.getElementById('pick-modal').hidden=true; document.body.style.overflow=''; }
+function exportPick(){
+  if(!pick.length){ toast('清單是空的'); return; }
+  var lines=['本土 AI 共學站 — 我的備課清單','匯出日期：'+TODAY_ZH+'｜共 '+pick.length+' 筆','資料來源：臺灣主權 AI 訓練語料庫（taic.moda.gov.tw）','',''];
+  pick.forEach(function(id,i){ var it=ITEM_BY_ID[id]; if(!it) return;
+    lines.push((i+1)+'. '+it.name);
+    lines.push('   主題：'+(it._themeName||'')+'｜機關：'+it.agency+'｜'+(it.open?'開放下載':'需申請')+'｜'+(it.use||'')+'·'+(it.grade||''));
+    lines.push('   引用：'+citeOf(it));
+    lines.push('   連結：'+DATASET_URL(it.id));
+    lines.push('');
+  });
+  var blob=new Blob([lines.join('\r\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='備課清單_2026-06-04.txt';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  toast('已匯出 '+pick.length+' 筆');
+}
+function buildPickUI(){
+  var fab=document.createElement('button'); fab.id='pick-fab';
+  fab.innerHTML='📋 備課清單 <span id="pick-count">0</span>'; fab.onclick=openPick;
+  document.body.appendChild(fab);
+  var modal=document.createElement('div'); modal.id='pick-modal'; modal.hidden=true;
+  modal.innerHTML='<div class="pm__backdrop"></div><div class="pm__panel" role="dialog" aria-label="我的備課清單"><div class="pm__head"><b>📋 我的備課清單 <span id="pm-count">0</span></b><button id="pm-close" aria-label="關閉">✕</button></div><div class="pm__body" id="pm-list"></div><div class="pm__foot"><button id="pm-copy">⧉ 複製全部引用</button><button id="pm-export">⬇ 匯出清單</button><button id="pm-clear" class="ghost">清空</button></div></div>';
+  document.body.appendChild(modal);
+  var t=document.createElement('div'); t.id='toast'; t.hidden=true; document.body.appendChild(t);
+  modal.querySelector('.pm__backdrop').onclick=closePick;
+  document.getElementById('pm-close').onclick=closePick;
+  document.getElementById('pm-clear').onclick=function(){ if(!pick.length){toast('清單已是空的');return;} pick=[]; savePick(); updatePickUI(); refreshStars(); renderPickList(); toast('已清空備課清單'); };
+  document.getElementById('pm-copy').onclick=function(){ if(!pick.length){toast('清單是空的');return;} var txt=pick.map(function(id){var it=ITEM_BY_ID[id];return it?citeOf(it):'';}).filter(Boolean).join('\n\n'); copyText(txt).then(function(){toast('已複製 '+pick.length+' 筆引用');}); };
+  document.getElementById('pm-export').onclick=exportPick;
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !document.getElementById('pick-modal').hidden) closePick(); });
+}
+// 卡片按鈕事件委派（加入清單 / 引用）
+document.getElementById('dsgrid').addEventListener('click', function(e){
+  var btn=e.target.closest('[data-act]'); if(!btn) return;
+  e.preventDefault();
+  var card=btn.closest('.ds'); if(!card) return;
+  var id=card.getAttribute('data-id'); var it=ITEM_BY_ID[id]; if(!it) return;
+  if(btn.getAttribute('data-act')==='star'){ var willAdd=!isPicked(id); togglePick(id); toast(willAdd?'已加入備課清單':'已從清單移除'); }
+  else if(btn.getAttribute('data-act')==='cite'){ copyText(citeOf(it)).then(function(){toast('已複製引用格式');}); }
+});
+buildPickUI();
+updatePickUI();
+
 render();
 </script>
 
@@ -3522,7 +3665,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04-1';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.1412';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
