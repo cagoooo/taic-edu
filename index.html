@@ -185,6 +185,7 @@ h2.title{font-size:clamp(26px,4vw,38px);font-weight:900;line-height:1.25;margin-
 .tg--use{background:#e8f3fb;color:#1d6fa5}
 .tg--grade{background:#fcf3da;color:#9a6b00}
 .tg--theme{background:var(--mist);color:var(--sea-deep)}
+.tg--pick{background:#fff3d6;color:#9a6b00;border:1px solid #f4d27a}
 /* card action row + 備課清單(B3) + 引用(H2) */
 a.ds__name{display:block;text-decoration:none}
 a.ds__name:hover{color:var(--sea-deep)}
@@ -397,7 +398,7 @@ a.ds__name:hover{color:var(--sea-deep)}
 
     <div class="exp" style="margin-top:26px">
       <div class="exp__global">
-        <label class="gsearch">🔎<input type="text" id="gq" placeholder="搜尋全部精選語料（跨九大主題、機關、關鍵字）…"></label>
+        <label class="gsearch">🔎<input type="text" id="gq" placeholder="搜尋全部 4554 筆語料（跨主題、機關、關鍵字）…"></label>
         <span class="gcount" id="gcount"></span>
       </div>
       <div class="exp__bar">
@@ -422,7 +423,7 @@ a.ds__name:hover{color:var(--sea-deep)}
         <a id="moreLink" href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer"></a>
       </div>
     </div>
-    <p class="hint" style="font-size:13px;color:var(--ink-soft);margin-top:14px">＊本探索器收錄各主題精選代表語料（每類約 28 筆），完整 4554 筆請至 <a href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer" style="color:var(--sea-deep);font-weight:700">語料庫官網</a> 查詢。資料匯出日：2026-06-04。</p>
+    <p class="hint" style="font-size:13px;color:var(--ink-soft);margin-top:14px">＊各主題卡片為精選代表語料（每類約 28 筆，標 <span style="color:#9a6b00;font-weight:700">⭐精選</span>）；<b>上方搜尋框已涵蓋全部 4554 筆語料</b>（首次搜尋時載入完整索引）。資料匯出日：2026-06-04，原始資料以 <a href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer" style="color:var(--sea-deep);font-weight:700">語料庫官網</a> 為準。</p>
   </div>
 </section>
 
@@ -3449,10 +3450,37 @@ const DB = JSON.parse(document.getElementById('catalog-data').textContent);
 const DATASET_URL = id => `https://taic.moda.gov.tw/datasets/${id}`;
 const USE_EMOJI = {'學生共讀':'📖','課堂素材':'🎒','教師備課':'👩‍🏫'};
 
-// 攤平成全站清單，供 B1 跨主題搜尋
+// 攤平成全站清單，供 B1 跨主題搜尋（精選 252 筆）
 const ALL = [];
 DB.themes.forEach(t => t.items.forEach(it =>
   ALL.push(Object.assign({_themeName:t.name,_themeEmoji:t.emoji}, it))));
+
+// ===== A2 全量索引（懶載入，4554 筆）=====
+const THEME_META = {};
+DB.themes.forEach(t => { THEME_META[t.key] = {name:t.name, emoji:t.emoji}; });
+const CURATED_IDS = new Set(ALL.map(it => it.id));
+const CURATED_BY_ID = {};
+ALL.forEach(it => { CURATED_BY_ID[it.id] = it; });
+let FULL_ALL = null;            // 展開後的全部 4554 筆（載入後）
+let fullState = 'idle';         // idle | loading | ready | error
+function expandRec(r){
+  const tm = r.t ? THEME_META[r.t] : null;
+  return { id:r.i, name:r.n, agency:r.a, open:r.o===1, kw:r.k||'', use:r.u, grade:r.g,
+           size:'', desc:'', _themeName: tm?tm.name:'', _themeEmoji: tm?tm.emoji:'' };
+}
+function loadFull(){
+  if(fullState==='ready') return Promise.resolve(true);
+  if(fullState==='loading') return new Promise(function(res){
+    var iv=setInterval(function(){ if(fullState!=='loading'){ clearInterval(iv); res(fullState==='ready'); } },120); });
+  fullState='loading';
+  return fetch('taic_index.json').then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){
+      FULL_ALL = d.items.map(function(r){ return CURATED_BY_ID[r.i] || expandRec(r); });
+      FULL_ALL.forEach(function(it){ if(!ITEM_BY_ID[it.id]) ITEM_BY_ID[it.id]=it; });
+      fullState='ready'; return true;
+    })
+    .catch(function(){ fullState='error'; return false; });
+}
 
 let current = DB.themes[0].key;
 let useFilter = 'all';
@@ -3506,7 +3534,8 @@ function cardHTML(it, showTheme){
         ${it.size?`<span class="ds__size">${esc(it.size)}</span>`:''}
       </div>
       <div class="ds__tags">
-        ${showTheme?`<span class="tg tg--theme">${it._themeEmoji} ${esc(it._themeName)}</span>`:''}
+        ${showTheme && CURATED_IDS.has(it.id)?`<span class="tg tg--pick">⭐ 精選</span>`:''}
+        ${showTheme && it._themeEmoji?`<span class="tg tg--theme">${it._themeEmoji} ${esc(it._themeName)}</span>`:''}
         ${it.use?`<span class="tg tg--use">${USE_EMOJI[it.use]||''} ${esc(it.use)}</span>`:''}
         ${it.grade?`<span class="tg tg--grade">${esc(it.grade)}</span>`:''}
       </div>
@@ -3525,19 +3554,29 @@ function render(){
   const more = document.getElementById('expMore');
   const gcount = document.getElementById('gcount');
 
-  if(q){ // ===== B1 全站搜尋模式 =====
+  if(q){ // ===== B1+A2 全站搜尋模式（涵蓋全部 4554 筆，懶載入）=====
     head.style.display='none';
     more.style.display='none';
     chipsEl.style.opacity='.4';
     document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-    const items = ALL.filter(it=> pass(it) &&
+    const source = (fullState==='ready' && FULL_ALL) ? FULL_ALL : ALL;
+    const items = source.filter(it=> pass(it) &&
       (it.name.includes(q) || (it.agency||'').includes(q) || (it.kw||'').includes(q)));
-    gcount.textContent = `全站找到 ${items.length} 筆`;
+    const total = (DB.meta && DB.meta.total_datasets) ? DB.meta.total_datasets.toLocaleString() : '4554';
+    const scope = fullState==='ready' ? `（已涵蓋全部 ${total} 筆語料）`
+                : fullState==='loading' ? '（精選；完整語料庫載入中…）'
+                : fullState==='error' ? '（精選；完整索引載入失敗，僅顯示精選）'
+                : '（精選 252 筆）';
+    gcount.textContent = `找到 ${items.length} 筆 ${scope}`;
     if(!items.length){
-      grid.innerHTML = `<div class="empty" style="grid-column:1/-1">「${esc(q)}」找不到符合的精選語料。換個關鍵字，或到<a href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer" style="color:var(--sea-deep);font-weight:700">語料庫官網</a>查完整 4554 筆。</div>`;
+      grid.innerHTML = `<div class="empty" style="grid-column:1/-1">「${esc(q)}」找不到符合的語料${fullState==='ready'?'':'（完整 4554 筆載入中，稍候再看看）'}。或到<a href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer" style="color:var(--sea-deep);font-weight:700">語料庫官網</a>查詢。</div>`;
     }else{
       grid.innerHTML = items.slice(0,80).map(it=>cardHTML(it,true)).join('') +
-        (items.length>80?`<div class="empty" style="grid-column:1/-1">已顯示前 80 筆，請再縮小關鍵字。</div>`:'');
+        (items.length>80?`<div class="empty" style="grid-column:1/-1">符合 ${items.length} 筆，已顯示前 80 筆，請再縮小關鍵字。</div>`:'');
+    }
+    // 首次搜尋時懶載入全量索引，載完若仍在搜尋則自動重繪為全站結果
+    if(fullState==='idle'){
+      loadFull().then(function(ok){ if(ok && gqEl.value.trim()) render(); });
     }
     return;
   }
@@ -3571,7 +3610,15 @@ ALL.forEach(it => { ITEM_BY_ID[it.id] = it; });
 const TODAY_ZH = '2026年6月4日';
 let pick = [];
 try { pick = JSON.parse(localStorage.getItem('taic_picklist_v1') || '[]'); } catch(e){ pick = []; }
-pick = pick.filter(id => ITEM_BY_ID[id]);   // 清掉已不存在的 id
+if(Array.isArray(pick)) pick = pick.filter(function(id){ return typeof id==='string'; }); else pick = [];
+// 若清單含非精選 id（全量索引項），載入全量索引補齊資料，再清掉真正失效的 id
+if(pick.some(function(id){ return !ITEM_BY_ID[id]; })){
+  loadFull().then(function(ok){
+    if(ok){ pick = pick.filter(function(id){ return ITEM_BY_ID[id]; }); savePick(); }
+    updatePickUI(); refreshStars();
+    if(!document.getElementById('pick-modal').hidden) renderPickList();
+  });
+}
 
 function isPicked(id){ return pick.indexOf(id) >= 0; }
 function savePick(){ try{ localStorage.setItem('taic_picklist_v1', JSON.stringify(pick)); }catch(e){} }
@@ -3665,7 +3712,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.1412';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.1423';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
