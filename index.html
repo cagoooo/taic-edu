@@ -335,6 +335,15 @@ a.ds__name:hover{color:var(--sea-deep)}
 .cr-cls button:hover{border-color:var(--sea);color:var(--sea-deep)}
 .cr-cls #wall-load{background:var(--deep);color:#fff;border-color:var(--deep)}
 .cr-wall-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 0 4px;line-height:1.7}
+.cr-mod{margin:8px 0 2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cr-mod button{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:9px;padding:6px 11px;font:700 12px system-ui,sans-serif;cursor:pointer}
+.cr-mod button:hover{border-color:var(--sea);color:var(--sea-deep)}
+.cr-mod input{border:1px solid var(--line);border-radius:9px;padding:6px 9px;font:inherit;font-size:13px;width:130px}
+.cr-mod #mod-status{font-size:12px;font-weight:600;color:#1c7d63}
+.wall-card--hidden{opacity:.6;border-style:dashed}
+.wall-card__mod{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;border-top:1px dashed var(--line);padding-top:8px}
+.wall-card__mod button{font:600 11.5px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;padding:4px 9px;cursor:pointer}
+.wall-card__mod button[data-mod="delete"]{color:var(--coral-deep);border-color:#f4c4b8}
 .cr-wall-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:12px}
 .cr-wall-empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);font-size:14px;padding:22px 6px;line-height:1.8}
 .wall-card{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff}
@@ -667,6 +676,10 @@ a.ds__name:hover{color:var(--sea-deep)}
         </span>
       </div>
       <p class="cr-wall-hint">老師發一個「班級代碼」（例如 SMES601），全班用同一個代碼，作品就會出現在這面牆上（跨裝置共覽，只用暱稱、不收個資）。創作後按「🌐 分享到作品牆」即可。</p>
+      <div class="cr-mod">
+        <button id="mod-toggle">👩‍🏫 老師管理</button>
+        <span id="mod-panel" hidden><input id="mod-pin" type="password" placeholder="管理密碼" maxlength="40"> <button id="mod-unlock">解鎖</button> <button id="mod-lock" hidden>鎖定</button> <span id="mod-status"></span></span>
+      </div>
       <div class="cr-wall-list" id="wall-list"></div>
     </div>
 
@@ -4482,19 +4495,37 @@ async function shareWork(kind, title, content, btn){
     if(document.getElementById('wall-list').childElementCount) loadWall();
   }catch(e){ toast(e.message||'分享失敗'); if(btn){ btn.disabled=false; btn.textContent=old; } }
 }
+function getModPin(){ try{ return localStorage.getItem('taic_mod_pin')||''; }catch(e){ return ''; } }
+function setModPin(p){ try{ if(p) localStorage.setItem('taic_mod_pin',p); else localStorage.removeItem('taic_mod_pin'); }catch(e){} }
+function updateModUI(){
+  var has=!!getModPin();
+  var st=document.getElementById('mod-status'); if(st) st.textContent=has?'✓ 已解鎖（可看到隱藏作品、隱藏/刪除）':'';
+  var lock=document.getElementById('mod-lock'); if(lock) lock.hidden=!has;
+}
 async function loadWall(){
   var cl=readClassInputs(); var box=document.getElementById('wall-list');
   if(!cl.code){ toast('請先填班級代碼'); document.getElementById('cls-code').focus(); return; }
   box.innerHTML='<div class="cr-wall-empty"><span class="ai-spin" style="display:inline-block;vertical-align:middle"></span> 載入中…</div>';
-  try{ var d=await callWorks({action:'list', class_code:cl.code}); renderWall(d.works||[], cl.code); }
-  catch(e){ box.innerHTML='<div class="cr-wall-empty">載入失敗：'+esc(e.message||'')+'</div>'; }
+  var payload={action:'list', class_code:cl.code}; var mp=getModPin(); if(mp) payload.pin=mp;
+  try{
+    var d=await callWorks(payload);
+    if(mp && !d.teacher){ setModPin(''); updateModUI(); toast('管理密碼錯誤，已回到學生檢視'); }
+    renderWall(d.works||[], cl.code, !!d.teacher);
+  }catch(e){ box.innerHTML='<div class="cr-wall-empty">載入失敗：'+esc(e.message||'')+'</div>'; }
 }
-function renderWall(works, code){
+function renderWall(works, code, teacher){
   var box=document.getElementById('wall-list');
   if(!works.length){ box.innerHTML='<div class="cr-wall-empty">班級「'+esc(code)+'」目前還沒有作品。<br>創作一份，按「🌐 分享到作品牆」就會出現在這裡！</div>'; return; }
   box.innerHTML=works.map(function(w){
-    return '<div class="wall-card"><div class="wall-card__top"><span class="wall-card__nick">'+esc(w.nickname)+'</span><span class="wall-card__kind">'+esc(w.type||'作品')+'</span></div><div class="wall-card__title">'+esc(w.title)+'</div><div class="wall-card__body">'+esc(w.content)+'</div></div>';
+    var mod = teacher ? '<div class="wall-card__mod">'+(w.hidden?'<button data-mod="unhide" data-id="'+w.id+'">👁 顯示</button>':'<button data-mod="hide" data-id="'+w.id+'">🚫 隱藏</button>')+'<button data-mod="delete" data-id="'+w.id+'">🗑 刪除</button></div>' : '';
+    return '<div class="wall-card'+(w.hidden?' wall-card--hidden':'')+'"><div class="wall-card__top"><span class="wall-card__nick">'+esc(w.nickname)+'</span><span class="wall-card__kind">'+esc(w.type||'作品')+(w.hidden?' · 已隱藏':'')+'</span></div><div class="wall-card__title">'+esc(w.title)+'</div><div class="wall-card__body">'+esc(w.content)+'</div>'+mod+'</div>';
   }).join('');
+  if(teacher){ box.querySelectorAll('[data-mod]').forEach(function(b){ b.onclick=function(){ moderate(b.getAttribute('data-id'), b.getAttribute('data-mod')); }; }); }
+}
+async function moderate(id, action){
+  if(action==='delete' && !confirm('確定要刪除這份作品嗎？此動作無法復原。')) return;
+  try{ await callWorks({action:action, id:parseInt(id), pin:getModPin()}); toast(action==='delete'?'已刪除':(action==='hide'?'已隱藏（學生看不到）':'已重新顯示')); loadWall(); }
+  catch(e){ toast(e.message||'操作失敗'); if(/密碼/.test(e.message||'')){ setModPin(''); updateModUI(); loadWall(); } }
 }
 function initCreate(){
   document.querySelectorAll('.cr-type').forEach(function(b){ b.onclick=function(){ crSetType(b.dataset.type); }; });
@@ -4508,6 +4539,11 @@ function initCreate(){
   if(cl.nick) document.getElementById('cls-nick').value=cl.nick;
   document.getElementById('cls-save').onclick=function(){ readClassInputs(); toast('已設定班級代碼與暱稱'); };
   document.getElementById('wall-load').onclick=function(){ withBusy(this,'載入中…',loadWall); };
+  // 老師管理
+  document.getElementById('mod-toggle').onclick=function(){ var p=document.getElementById('mod-panel'); p.hidden=!p.hidden; if(!p.hidden){ var mp=getModPin(); if(mp) document.getElementById('mod-pin').value=mp; } };
+  document.getElementById('mod-unlock').onclick=function(){ var v=(document.getElementById('mod-pin').value||'').trim(); if(!v){ toast('請輸入管理密碼'); return; } setModPin(v); updateModUI(); if(readClassInputs().code) loadWall(); else toast('已輸入密碼，載入作品牆後即啟用管理'); };
+  document.getElementById('mod-lock').onclick=function(){ setModPin(''); updateModUI(); document.getElementById('mod-pin').value=''; toast('已鎖定（回到學生檢視）'); if(readClassInputs().code) loadWall(); };
+  updateModUI();
 }
 initCreate();
 
@@ -4518,7 +4554,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.2001';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.2011';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
