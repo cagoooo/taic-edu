@@ -1,0 +1,6 @@
+# 本機開發工具設定（preview 伺服器）
+.claude/
+
+# 系統檔
+Thumbs.db
+.DS_Store
