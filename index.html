@@ -35,6 +35,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <style>
 :root{
   --ink:#0c2b38; --ink-soft:#3a5763;
@@ -253,6 +254,8 @@ a.ds__name:hover{color:var(--sea-deep)}
 .ai-key .chg,.ai-key .clr{background:#fff;border:1px solid var(--line);color:var(--ink-soft)}
 .ai-key .link{color:var(--sea-deep);font-weight:700;text-decoration:none;border-bottom:1px dotted;white-space:nowrap}
 .ai-key.set{color:#1c7d63;font-weight:600}
+.ts-box{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 22px;background:#f6fbfb;border-bottom:1px solid var(--line)}
+.ts-label{font-size:12.5px;color:var(--ink-soft)}
 .ai-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:16px 22px 0}
 .ai-tab{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:11px 11px 0 0;padding:9px 15px;font:700 14px system-ui,sans-serif;cursor:pointer}
 .ai-tab.on{background:var(--deep);color:#fff;border-color:var(--deep)}
@@ -574,6 +577,7 @@ a.ds__name:hover{color:var(--sea-deep)}
 
     <div class="ai-wrap">
       <div class="ai-key" id="aiKeyBar"></div>
+      <div class="ts-box"><span class="ts-label">🛡️ 人機驗證（保護共用 AI 額度，多半自動完成 ✓）</span><div id="ts-widget"></div></div>
       <div class="ai-tabs">
         <button class="ai-tab on" data-panel="ai-qa">💬 語料問答</button>
         <button class="ai-tab" data-panel="ai-sheet">📝 學習單產生器</button>
@@ -4023,11 +4027,35 @@ const AI_BACKEND = {
   url: 'https://xcnmmaayrtiklntvhdhc.supabase.co/functions/v1/taic-ai',
   anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhjbm1tYWF5cnRpa2xudHZoZGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NjQsImV4cCI6MjA5MjAzMTQ2NH0.Q5yCQHPtJBitKYucn-8jZqsIqkaSLmJVt1ZVse61qks'
 };
+// ===== Cloudflare Turnstile 人機驗證（保護共用 AI 額度）=====
+const TURNSTILE = { siteKey: '0x4AAAAAADevm2q_3Az4ZjUN', token: '', widgetId: null };
+function tsRender(){
+  if(!TURNSTILE.siteKey) return;
+  var el=document.getElementById('ts-widget'); if(!el) return;
+  if(TURNSTILE.widgetId!==null) return;
+  if(!(window.turnstile && window.turnstile.render)){ setTimeout(tsRender, 200); return; }
+  try{
+    TURNSTILE.widgetId = window.turnstile.render(el, {
+      sitekey: TURNSTILE.siteKey, theme:'light', size:'flexible',
+      callback: function(t){ TURNSTILE.token=t; },
+      'expired-callback': function(){ TURNSTILE.token=''; },
+      'error-callback': function(){ TURNSTILE.token=''; }
+    });
+  }catch(e){ /* ignore */ }
+}
+function tsReset(){ TURNSTILE.token=''; if(TURNSTILE.widgetId!==null && window.turnstile){ try{ window.turnstile.reset(TURNSTILE.widgetId); }catch(e){} } }
+async function tsToken(){
+  if(!TURNSTILE.siteKey) return '';
+  for(var i=0;i<80;i++){ if(TURNSTILE.token) return TURNSTILE.token; await new Promise(function(r){ setTimeout(r,100); }); }
+  return TURNSTILE.token || '';
+}
 async function callBackend(prompt, maxTokens){
-  let resp;
-  try{ resp=await fetch(AI_BACKEND.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_BACKEND.anon,'apikey':AI_BACKEND.anon},body:JSON.stringify({prompt:prompt,maxTokens:maxTokens||1024})}); }
-  catch(e){ throw new Error('連線 AI 後端失敗，請檢查網路。'); }
-  let data; try{ data=await resp.json(); }catch(e){ throw new Error('AI 後端回應異常，請稍後再試。'); }
+  var token = await tsToken();
+  var resp;
+  try{ resp=await fetch(AI_BACKEND.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_BACKEND.anon,'apikey':AI_BACKEND.anon},body:JSON.stringify({prompt:prompt,maxTokens:maxTokens||1024,turnstileToken:token})}); }
+  catch(e){ tsReset(); throw new Error('連線 AI 後端失敗，請檢查網路。'); }
+  var data; try{ data=await resp.json(); }catch(e){ tsReset(); throw new Error('AI 後端回應異常，請稍後再試。'); }
+  tsReset();
   if(data && data.error) throw new Error(data.error);
   if(!resp.ok) throw new Error('AI 後端錯誤（'+resp.status+'）');
   if(!data.text) throw new Error('AI 後端沒有回傳內容。');
@@ -4170,6 +4198,7 @@ async function explainMatch(topic, grade, matched){
 }
 function initAI(){
   renderKeyBar();
+  tsRender();
   document.querySelectorAll('.ai-tab').forEach(function(tab){
     tab.onclick=function(){
       document.querySelectorAll('.ai-tab').forEach(function(t){ t.classList.toggle('on',t===tab); });
@@ -4554,7 +4583,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.2011';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.2215';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;

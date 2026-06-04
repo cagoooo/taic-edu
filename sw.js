@@ -1,4 +1,4 @@
-const BUILD_VERSION = '2026.06.04.2011';
+const BUILD_VERSION = '2026.06.04.2215';
 const CACHE = 'taic-edu-' + BUILD_VERSION;
 const PRECACHE = [
   './', './index.html',
