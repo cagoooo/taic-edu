@@ -4,3 +4,7 @@
 # 系統檔
 Thumbs.db
 .DS_Store
+
+# 本機暫存/驗證檔
+_*.html
+_*.txt
