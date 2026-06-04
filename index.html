@@ -325,6 +325,24 @@ a.ds__name:hover{color:var(--sea-deep)}
 .cr-work__act button{font:600 11.5px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;padding:5px 9px;cursor:pointer}
 .cr-work__act button:hover{border-color:var(--sea);color:var(--sea-deep)}
 .cr-work__act .cr-save{border-color:var(--gold);background:#fff7e6;color:#9a6b00}
+/* 全班作品牆 */
+.cr-wall{margin-top:24px;background:linear-gradient(180deg,#fff,#f3faf9);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:18px 20px}
+.cr-wall-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.cr-wall-head b{font-size:16px}
+.cr-cls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.cr-cls input{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:inherit;font-size:13.5px;color:var(--ink);width:140px}
+.cr-cls button{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:9px;padding:7px 12px;font:700 12.5px system-ui,sans-serif;cursor:pointer}
+.cr-cls button:hover{border-color:var(--sea);color:var(--sea-deep)}
+.cr-cls #wall-load{background:var(--deep);color:#fff;border-color:var(--deep)}
+.cr-wall-hint{font-size:12.5px;color:var(--ink-soft);margin:10px 0 4px;line-height:1.7}
+.cr-wall-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:12px}
+.cr-wall-empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);font-size:14px;padding:22px 6px;line-height:1.8}
+.wall-card{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff}
+.wall-card__top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.wall-card__nick{font-weight:700;font-size:13.5px;color:var(--ink)}
+.wall-card__kind{font-size:10.5px;font-weight:700;color:var(--sea-deep);background:var(--mist);padding:2px 8px;border-radius:999px}
+.wall-card__title{font-size:14px;font-weight:700;color:var(--coral-deep);margin-bottom:6px}
+.wall-card__body{font-size:12.5px;color:var(--ink-soft);line-height:1.7;white-space:pre-wrap;max-height:170px;overflow:auto;word-break:break-word}
 
 /* ===== ROADMAP ===== */
 .road{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px;counter-reset:p}
@@ -638,7 +656,21 @@ a.ds__name:hover{color:var(--sea-deep)}
       <div class="cr-pf-list" id="cr-pf-list"></div>
     </div>
 
-    <p class="ai-note">⚠️ 作品由 AI 協助生成（免自備金鑰，學校共用額度支援），請師生一起潤飾後再使用；台語／客語標音可能需校正。作品存在這台裝置（localStorage），可匯出分享。<b>全班作品牆與跨校分享為下一步</b>（共用後端已就緒，作品牆即將開放）。</p>
+    <div class="cr-wall">
+      <div class="cr-wall-head">
+        <b>🖼️ 全班作品牆</b>
+        <span class="cr-cls">
+          <input id="cls-code" placeholder="班級代碼（老師發）" maxlength="24">
+          <input id="cls-nick" placeholder="我的暱稱" maxlength="24">
+          <button id="cls-save">設定</button>
+          <button id="wall-load">看作品牆</button>
+        </span>
+      </div>
+      <p class="cr-wall-hint">老師發一個「班級代碼」（例如 SMES601），全班用同一個代碼，作品就會出現在這面牆上（跨裝置共覽，只用暱稱、不收個資）。創作後按「🌐 分享到作品牆」即可。</p>
+      <div class="cr-wall-list" id="wall-list"></div>
+    </div>
+
+    <p class="ai-note">⚠️ 作品由 AI 協助生成（免自備金鑰，學校共用額度支援），請師生一起潤飾後再使用；台語／客語標音可能需校正。作品存在這台裝置（localStorage），可匯出分享。<b>「全班作品牆」用班級代碼＋暱稱、不收個資</b>，跨裝置共覽；老師可在後台隱藏不當內容。</p>
   </div>
 </section>
 
@@ -4374,11 +4406,12 @@ function renderPortfolio(){
   box.innerHTML=portfolio.map(function(w){
     return '<div class="cr-work"><div class="cr-work__top"><b>'+esc(w.title)+'</b><span class="cr-work__kind">'+esc(w.kind)+'</span></div>'+
       '<div class="cr-work__body">'+esc(w.content)+'</div>'+
-      '<div class="cr-work__act"><button data-cpw="'+w.id+'">⧉ 複製</button><button class="cr-save" data-cardw="'+w.id+'">📤 校本語料卡</button><button data-rmw="'+w.id+'">✕ 移除</button></div></div>';
+      '<div class="cr-work__act"><button data-cpw="'+w.id+'">⧉ 複製</button><button data-shw="'+w.id+'">🌐 分享</button><button class="cr-save" data-cardw="'+w.id+'">📤 校本語料卡</button><button data-rmw="'+w.id+'">✕ 移除</button></div></div>';
   }).join('');
   box.querySelectorAll('[data-cpw]').forEach(function(b){ b.onclick=function(){ var w=portfolio.filter(function(x){return x.id===b.getAttribute('data-cpw');})[0]; if(w) copyText(w.content).then(function(){toast('已複製作品');}); }; });
   box.querySelectorAll('[data-cardw]').forEach(function(b){ b.onclick=function(){ var w=portfolio.filter(function(x){return x.id===b.getAttribute('data-cardw');})[0]; if(w) copyText(workToCorpusCard(w)).then(function(){toast('已複製校本語料卡（可貼給老師收集）');}); }; });
   box.querySelectorAll('[data-rmw]').forEach(function(b){ b.onclick=function(){ removeWork(b.getAttribute('data-rmw')); }; });
+  box.querySelectorAll('[data-shw]').forEach(function(b){ b.onclick=function(){ var w=portfolio.filter(function(x){return x.id===b.getAttribute('data-shw');})[0]; if(w) shareWork(w.kind, w.title, w.content, b); }; });
 }
 function exportPortfolio(){
   if(!portfolio.length){ toast('作品集是空的'); return; }
@@ -4400,10 +4433,12 @@ function crSetType(type){
 }
 function crResult(text, type){
   var out=document.getElementById('cr-out');
-  out.innerHTML='<div class="ai-out__bar"><span class="ai-badge">✦ 與 AI 共創</span><button class="ai-out__save" id="cr-save-btn">📁 存進作品集</button><button class="ai-out__copy">⧉ 複製</button></div><div class="ai-text">'+esc(text)+'</div>';
+  out.innerHTML='<div class="ai-out__bar"><span class="ai-badge">✦ 與 AI 共創</span><button class="ai-out__save" id="cr-save-btn">📁 存進作品集</button><button class="ai-out__save" id="cr-share-btn" style="border-color:var(--sea);background:#eaf4fb;color:#1d6fa5">🌐 分享到作品牆</button><button class="ai-out__copy">⧉ 複製</button></div><div class="ai-text">'+esc(text)+'</div>';
   out.classList.add('show');
   out.querySelector('.ai-out__copy').onclick=function(){ copyText(text).then(function(){toast('已複製');}); };
-  document.getElementById('cr-save-btn').onclick=function(){ var seed=(document.getElementById('cr-seed').value||'').trim(); var title=seed.slice(0,18)||CREATE_TYPES[type].label; addWork(type,CREATE_TYPES[type].label,title,text); this.textContent='✓ 已存入作品集'; this.disabled=true; };
+  var crTitle=function(){ var seed=(document.getElementById('cr-seed').value||'').trim(); return seed.slice(0,18)||CREATE_TYPES[type].label; };
+  document.getElementById('cr-save-btn').onclick=function(){ addWork(type,CREATE_TYPES[type].label,crTitle(),text); this.textContent='✓ 已存入作品集'; this.disabled=true; };
+  document.getElementById('cr-share-btn').onclick=function(){ shareWork(CREATE_TYPES[type].label, crTitle(), text, this); };
 }
 async function runCreate(){
   var out=document.getElementById('cr-out'); var key=getKey();
@@ -4418,12 +4453,61 @@ async function runCreate(){
   try{ var text=await callAI(prompt,2048); crResult(text, crType); }
   catch(e){ aiError(out,e.message||'呼叫失敗'); }
 }
+// ===== 全班作品牆（跨裝置；班級代碼 + 暱稱，不收個資）=====
+const WORKS_URL='https://xcnmmaayrtiklntvhdhc.supabase.co/functions/v1/taic-works';
+function getClass(){ try{ return JSON.parse(localStorage.getItem('taic_class')||'{}'); }catch(e){ return {}; } }
+function setClassLS(c){ try{ localStorage.setItem('taic_class', JSON.stringify(c)); }catch(e){} }
+function readClassInputs(){
+  var code=(document.getElementById('cls-code').value||'').trim();
+  var nick=(document.getElementById('cls-nick').value||'').trim();
+  setClassLS({code:code,nick:nick});
+  return {code:code,nick:nick};
+}
+async function callWorks(payload){
+  var resp;
+  try{ resp=await fetch(WORKS_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_BACKEND.anon,'apikey':AI_BACKEND.anon},body:JSON.stringify(payload)}); }
+  catch(e){ throw new Error('連線作品牆失敗，請檢查網路。'); }
+  var d; try{ d=await resp.json(); }catch(e){ throw new Error('作品牆回應異常。'); }
+  if(d && d.error) throw new Error(d.error);
+  if(!resp.ok) throw new Error('作品牆錯誤（'+resp.status+'）');
+  return d;
+}
+async function shareWork(kind, title, content, btn){
+  var cl=readClassInputs();
+  if(!cl.code || !cl.nick){ toast('請先在下方「全班作品牆」填班級代碼與暱稱'); var el=document.getElementById('cls-code'); if(el){ el.scrollIntoView({block:'center'}); el.focus(); } return; }
+  var old=btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.textContent='分享中…'; }
+  try{
+    await callWorks({action:'submit', class_code:cl.code, nickname:cl.nick, type:kind, title:title, content:content});
+    toast('已分享到全班作品牆！'); if(btn){ btn.textContent='✓ 已分享'; }
+    if(document.getElementById('wall-list').childElementCount) loadWall();
+  }catch(e){ toast(e.message||'分享失敗'); if(btn){ btn.disabled=false; btn.textContent=old; } }
+}
+async function loadWall(){
+  var cl=readClassInputs(); var box=document.getElementById('wall-list');
+  if(!cl.code){ toast('請先填班級代碼'); document.getElementById('cls-code').focus(); return; }
+  box.innerHTML='<div class="cr-wall-empty"><span class="ai-spin" style="display:inline-block;vertical-align:middle"></span> 載入中…</div>';
+  try{ var d=await callWorks({action:'list', class_code:cl.code}); renderWall(d.works||[], cl.code); }
+  catch(e){ box.innerHTML='<div class="cr-wall-empty">載入失敗：'+esc(e.message||'')+'</div>'; }
+}
+function renderWall(works, code){
+  var box=document.getElementById('wall-list');
+  if(!works.length){ box.innerHTML='<div class="cr-wall-empty">班級「'+esc(code)+'」目前還沒有作品。<br>創作一份，按「🌐 分享到作品牆」就會出現在這裡！</div>'; return; }
+  box.innerHTML=works.map(function(w){
+    return '<div class="wall-card"><div class="wall-card__top"><span class="wall-card__nick">'+esc(w.nickname)+'</span><span class="wall-card__kind">'+esc(w.type||'作品')+'</span></div><div class="wall-card__title">'+esc(w.title)+'</div><div class="wall-card__body">'+esc(w.content)+'</div></div>';
+  }).join('');
+}
 function initCreate(){
   document.querySelectorAll('.cr-type').forEach(function(b){ b.onclick=function(){ crSetType(b.dataset.type); }; });
   crSetType('story');
   document.getElementById('cr-go').onclick=function(){ withBusy(this,'創作中…',runCreate); };
   document.getElementById('cr-pf-export').onclick=exportPortfolio;
   renderPortfolio();
+  // 全班作品牆
+  var cl=getClass();
+  if(cl.code) document.getElementById('cls-code').value=cl.code;
+  if(cl.nick) document.getElementById('cls-nick').value=cl.nick;
+  document.getElementById('cls-save').onclick=function(){ readClassInputs(); toast('已設定班級代碼與暱稱'); };
+  document.getElementById('wall-load').onclick=function(){ withBusy(this,'載入中…',loadWall); };
 }
 initCreate();
 
@@ -4434,7 +4518,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.1950';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.2001';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
