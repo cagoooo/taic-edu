@@ -232,6 +232,47 @@ a.ds__name:hover{color:var(--sea-deep)}
 #toast.show{opacity:1}
 @media print{#pick-fab,#pick-modal,#toast,#sw-update-bar{display:none!important}}
 
+/* ===== AI 助理 (C1) ===== */
+#ai .lead b{color:var(--ink)}
+.ai-wrap{background:linear-gradient(180deg,#fff,#f1faf9);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden;margin-top:26px}
+.ai-key{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:15px 22px;background:#eef8f7;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-soft)}
+.ai-key input{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;color:var(--ink)}
+.ai-key button{border:none;border-radius:10px;padding:9px 14px;font:700 13px system-ui,sans-serif;cursor:pointer}
+.ai-key .save{background:var(--deep);color:#fff}
+.ai-key .chg,.ai-key .clr{background:#fff;border:1px solid var(--line);color:var(--ink-soft)}
+.ai-key .link{color:var(--sea-deep);font-weight:700;text-decoration:none;border-bottom:1px dotted;white-space:nowrap}
+.ai-key.set{color:#1c7d63;font-weight:600}
+.ai-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:16px 22px 0}
+.ai-tab{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:11px 11px 0 0;padding:9px 15px;font:700 14px system-ui,sans-serif;cursor:pointer}
+.ai-tab.on{background:var(--deep);color:#fff;border-color:var(--deep)}
+.ai-panel{padding:20px 22px 24px;border-top:1px solid var(--line)}
+.ai-panel[hidden]{display:none}
+.ai-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ai-field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink-soft);font-weight:600}
+.ai-field select,.ai-field input{border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:14px;color:var(--ink);background:#fff;font-weight:400}
+.ai-ta{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;resize:vertical;min-height:60px;color:var(--ink)}
+.ai-go{margin-top:12px;background:linear-gradient(135deg,#0ea5b7,#0a7d8c);color:#fff;border:none;border-radius:12px;padding:12px 22px;font:700 15px system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.ai-go:hover{transform:translateY(-1px)}
+.ai-go:disabled{opacity:.55;cursor:default;transform:none}
+.ai-quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.ai-quick button{font:600 12.5px system-ui,sans-serif;border:1px dashed var(--sea);background:#fff;color:var(--sea-deep);border-radius:9px;padding:6px 11px;cursor:pointer;text-align:left}
+.ai-out{margin-top:18px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px 18px;display:none}
+.ai-out.show{display:block}
+.ai-out__bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px}
+.ai-badge{background:#eaf4fb;color:#1d6fa5;font-weight:800;padding:3px 10px;border-radius:999px}
+.ai-out__copy{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:9px;padding:5px 11px;font:600 12px system-ui,sans-serif;color:var(--ink-soft);cursor:pointer}
+.ai-text{font-size:15px;line-height:1.85;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.ai-src{margin-top:16px;border-top:1px dashed var(--line);padding-top:13px}
+.ai-src h4{font-size:13px;color:var(--ink-soft);margin-bottom:8px}
+.ai-src a{display:block;font-size:13.5px;color:var(--sea-deep);text-decoration:none;padding:6px 0;border-bottom:1px solid var(--mist)}
+.ai-src a:hover{color:var(--coral-deep)}
+.ai-src .ag{color:var(--ink-soft);font-size:12px}
+.ai-loading{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:14px;padding:6px 0}
+.ai-spin{width:18px;height:18px;border:3px solid var(--mist);border-top-color:var(--sea);border-radius:50%;animation:aispin .8s linear infinite;flex:none}
+@keyframes aispin{to{transform:rotate(360deg)}}
+.ai-err{color:var(--coral-deep);font-size:14px;background:#fdeee9;border-radius:10px;padding:11px 13px;line-height:1.6}
+.ai-note{font-size:12.5px;color:var(--ink-soft);margin-top:14px;line-height:1.75;background:var(--mist);border-radius:12px;padding:12px 15px}
+
 /* ===== ROADMAP ===== */
 .road{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:p}
 @media(max-width:880px){.road{grid-template-columns:1fr}}
@@ -302,6 +343,7 @@ a.ds__name:hover{color:var(--sea-deep)}
       <a href="#about">這是什麼</a>
       <a href="#roles">三方共學</a>
       <a href="#explore">語料探索</a>
+      <a href="#ai">AI 助理</a>
       <a href="#road">開發藍圖</a>
       <a href="#future">未來想像</a>
       <a href="#license">授權須知</a>
@@ -424,6 +466,62 @@ a.ds__name:hover{color:var(--sea-deep)}
       </div>
     </div>
     <p class="hint" style="font-size:13px;color:var(--ink-soft);margin-top:14px">＊各主題卡片為精選代表語料（每類約 28 筆，標 <span style="color:#9a6b00;font-weight:700">⭐精選</span>）；<b>上方搜尋框已涵蓋全部 4554 筆語料</b>（首次搜尋時載入完整索引）。資料匯出日：2026-06-04，原始資料以 <a href="https://taic.moda.gov.tw/" target="_blank" rel="noopener noreferrer" style="color:var(--sea-deep);font-weight:700">語料庫官網</a> 為準。</p>
+  </div>
+</section>
+
+<!-- AI 助理 (C1) -->
+<section id="ai">
+  <div class="wrap">
+    <span class="eyebrow">階段二 · 本土 AI 教學助理</span>
+    <h2 class="title">🤖 用台灣語料回答的 AI 助理</h2>
+    <p class="lead">問它問題，它會先從 <b>4554 筆台灣語料</b>找出相關資料當依據再回答，並標出引用來源；也能<b>一鍵生成學習單、台語繪本</b>。使用你<b>自己的免費 Gemini 金鑰</b>，只存在你的瀏覽器，不上傳、不共用。</p>
+
+    <div class="ai-wrap">
+      <div class="ai-key" id="aiKeyBar"></div>
+      <div class="ai-tabs">
+        <button class="ai-tab on" data-panel="ai-qa">💬 語料問答</button>
+        <button class="ai-tab" data-panel="ai-sheet">📝 學習單產生器</button>
+        <button class="ai-tab" data-panel="ai-book">📖 台語繪本</button>
+      </div>
+
+      <div class="ai-panel" id="ai-qa">
+        <label class="ai-field" style="width:100%">提問（用台灣國小教學情境問）
+          <textarea class="ai-ta" id="qa-q" placeholder="例：海洋教育適合從哪個年段開始？可以怎麼帶？"></textarea>
+        </label>
+        <div class="ai-quick" id="qa-quick">
+          <button>海洋教育適合哪個年段？可以怎麼開始？</button>
+          <button>有哪些台語、客語教學的語料可以用？</button>
+          <button>想帶學生做家鄉踏查，有什麼在地文化素材？</button>
+        </div>
+        <button class="ai-go" id="qa-go">✦ 問 AI（用台灣語料回答）</button>
+        <div class="ai-out" id="qa-out"></div>
+      </div>
+
+      <div class="ai-panel" id="ai-sheet" hidden>
+        <div class="ai-row">
+          <label class="ai-field">主題<input id="sh-topic" placeholder="例：海洋與我的家鄉"></label>
+          <label class="ai-field">年段<select id="sh-grade"><option>低年級</option><option selected>中年級</option><option>高年級</option></select></label>
+          <label class="ai-field">領域（可留空）<input id="sh-domain" placeholder="例：自然 / 綜合"></label>
+        </div>
+        <label class="ai-field" style="width:100%">補充說明（可留空）
+          <textarea class="ai-ta" id="sh-extra" placeholder="例：想結合校外踏查、加入分組討論…"></textarea>
+        </label>
+        <button class="ai-go" id="sh-go">✦ 生成學習單</button>
+        <div class="ai-out" id="sh-out"></div>
+      </div>
+
+      <div class="ai-panel" id="ai-book" hidden>
+        <div class="ai-row">
+          <label class="ai-field">主題<input id="bk-topic" placeholder="例：海邊的一天"></label>
+          <label class="ai-field">語言<select id="bk-lang"><option selected>台語</option><option>客語</option><option>國語</option></select></label>
+          <label class="ai-field">年段<select id="bk-grade"><option selected>低年級</option><option>中年級</option><option>高年級</option></select></label>
+          <label class="ai-field">頁數<select id="bk-pages"><option>4</option><option selected>6</option><option>8</option></select></label>
+        </div>
+        <button class="ai-go" id="bk-go">✦ 生成繪本腳本</button>
+        <div class="ai-out" id="bk-out"></div>
+      </div>
+    </div>
+    <p class="ai-note">⚠️ AI 生成內容僅供參考，請老師審閱後再使用；台語／客語標音可能需要校正。金鑰只存在你這台裝置的瀏覽器（localStorage），不會上傳、不會被別人看到，也不會寫進這個網站的程式碼。免費額度約每天 1500 次，一般班級使用綽綽有餘。</p>
   </div>
 </section>
 
@@ -3705,6 +3803,141 @@ document.getElementById('dsgrid').addEventListener('click', function(e){
 buildPickUI();
 updatePickUI();
 
+// ===== C1 本土 AI 教學助理（BYO 金鑰，前端直連 Gemini）=====
+const GEMINI_MODELS = ['gemini-2.5-flash','gemini-flash-latest'];
+function getKey(){ try{ return localStorage.getItem('taic_gemini_key')||''; }catch(e){ return ''; } }
+function setKey(k){ try{ if(k) localStorage.setItem('taic_gemini_key',k); else localStorage.removeItem('taic_gemini_key'); }catch(e){} renderKeyBar(); }
+function renderKeyBar(){
+  const bar=document.getElementById('aiKeyBar'); if(!bar) return; const k=getKey();
+  if(k){
+    bar.className='ai-key set';
+    bar.innerHTML='✓ 已設定金鑰（只存在這台裝置）　<button class="chg" id="ai-chg">變更</button> <button class="clr" id="ai-clr">清除</button>';
+    document.getElementById('ai-chg').onclick=function(){ setKey(''); setTimeout(function(){ var i=document.getElementById('ai-keyin'); if(i) i.focus(); },40); };
+    document.getElementById('ai-clr').onclick=function(){ setKey(''); toast('已清除金鑰'); };
+  }else{
+    bar.className='ai-key';
+    bar.innerHTML='🔑 <input id="ai-keyin" type="password" autocomplete="off" placeholder="貼上你的免費 Gemini 金鑰（AIza…）"> <button class="save" id="ai-save">儲存</button> <a class="link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">免費取得金鑰 ↗</a>';
+    document.getElementById('ai-save').onclick=function(){ var v=(document.getElementById('ai-keyin').value||'').trim(); if(!v){ toast('請先貼上金鑰'); return; } if(!/^AIza/.test(v) && !confirm('這把金鑰看起來不像 Gemini 金鑰（通常以 AIza 開頭），仍要儲存嗎？')) return; setKey(v); toast('金鑰已儲存（僅存本機）'); };
+    document.getElementById('ai-keyin').addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('ai-save').click(); });
+  }
+}
+async function callGemini(key, prompt, maxTokens){
+  let lastErr=null;
+  for(let m=0;m<GEMINI_MODELS.length;m++){
+    const url='https://generativelanguage.googleapis.com/v1beta/models/'+GEMINI_MODELS[m]+':generateContent?key='+encodeURIComponent(key);
+    const body={ contents:[{role:'user',parts:[{text:prompt}]}],
+      generationConfig:{ temperature:0.85, maxOutputTokens:maxTokens||2048, thinkingConfig:{thinkingBudget:0} },
+      safetySettings:[
+        {category:'HARM_CATEGORY_HATE_SPEECH',threshold:'BLOCK_ONLY_HIGH'},
+        {category:'HARM_CATEGORY_HARASSMENT',threshold:'BLOCK_ONLY_HIGH'},
+        {category:'HARM_CATEGORY_DANGEROUS_CONTENT',threshold:'BLOCK_ONLY_HIGH'},
+        {category:'HARM_CATEGORY_SEXUALLY_EXPLICIT',threshold:'BLOCK_ONLY_HIGH'} ] };
+    let resp;
+    try{ resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
+    catch(e){ throw new Error('網路連線失敗，請確認網路後再試。'); }
+    if(resp.status===400){ const j=await resp.json().catch(function(){return{};}); const msg=(j.error&&j.error.message)||''; if(/API key not valid|API_KEY_INVALID|invalid.*key/i.test(msg)) throw new Error('金鑰無效，請確認你貼的是正確的 Gemini API 金鑰。'); lastErr=new Error('請求錯誤：'+(msg||'400')); continue; }
+    if(resp.status===404){ lastErr=new Error('模型 '+GEMINI_MODELS[m]+' 不存在'); continue; }
+    if(resp.status===403){ throw new Error('金鑰沒有權限，或尚未在該專案啟用 Generative Language API。'); }
+    if(resp.status===429){ throw new Error('今日免費額度可能已用完（約每天 1500 次），明天再試、或在 AI Studio 換一把金鑰。'); }
+    if(!resp.ok){ lastErr=new Error('Gemini 回應錯誤（'+resp.status+'）'); continue; }
+    const data=await resp.json();
+    if(data.promptFeedback&&data.promptFeedback.blockReason) throw new Error('內容被 Gemini 安全機制擋下，請換個說法再試。');
+    const cand=data.candidates&&data.candidates[0];
+    if(!cand) throw new Error('Gemini 沒有回傳內容，請再試一次。');
+    if(cand.finishReason==='SAFETY') throw new Error('內容被安全機制擋下，請調整問題用詞。');
+    const parts=cand.content&&cand.content.parts; const text=parts?parts.map(function(p){return p.text||'';}).join(''):'';
+    if(!text.trim()) throw new Error('Gemini 回傳空白，請再試一次。');
+    return text;
+  }
+  throw lastErr||new Error('呼叫 Gemini 失敗。');
+}
+function aiRetrieve(question, k){
+  const src=(fullState==='ready'&&FULL_ALL)?FULL_ALL:ALL;
+  const clean=(question||'').replace(/[，。、？！；：「」『』（）()\s,.?!~～\-]/g,'');
+  const grams={};
+  for(let n=2;n<=3;n++) for(let i=0;i+n<=clean.length;i++) grams[clean.slice(i,i+n)]=n;
+  const gramArr=Object.keys(grams);
+  if(!gramArr.length) return [];
+  const scored=[];
+  for(let i=0;i<src.length;i++){ const it=src[i]; const hay=(it.name||'')+' '+(it.kw||'')+' '+(it.agency||''); let s=0;
+    for(let g=0;g<gramArr.length;g++){ if(hay.indexOf(gramArr[g])>=0) s+=gramArr[g].length; }
+    if(s>0){ if(it.open) s+=0.4; scored.push({it:it,s:s}); } }
+  scored.sort(function(a,b){ return b.s-a.s; });
+  return scored.slice(0,k||6).map(function(x){ return x.it; });
+}
+function aiShow(el,html){ el.innerHTML=html; el.classList.add('show'); }
+function aiLoading(el,msg){ aiShow(el,'<div class="ai-loading"><span class="ai-spin"></span>'+(msg||'AI 思考中…')+'</div>'); }
+function aiError(el,msg){ aiShow(el,'<div class="ai-err">⚠️ '+esc(msg)+'</div>'); }
+function aiResult(el,text,srcHTML){
+  el.innerHTML='<div class="ai-out__bar"><span class="ai-badge">✦ 由 Gemini 生成</span><button class="ai-out__copy">⧉ 複製全文</button></div><div class="ai-text">'+esc(text)+'</div>'+(srcHTML||'');
+  el.classList.add('show');
+  el.querySelector('.ai-out__copy').onclick=function(){ copyText(text).then(function(){toast('已複製');}); };
+}
+function withBusy(btn, label, fn){
+  const old=btn.textContent; btn.disabled=true; btn.textContent=label;
+  Promise.resolve().then(fn).catch(function(){}).then(function(){ btn.disabled=false; btn.textContent=old; });
+}
+async function runQA(){
+  const out=document.getElementById('qa-out'); const key=getKey();
+  const q=(document.getElementById('qa-q').value||'').trim();
+  if(!q){ toast('請先輸入問題'); return; }
+  if(!key){ aiError(out,'請先在上方設定你的 Gemini 金鑰（免費，點「免費取得金鑰」即可申請）。'); return; }
+  aiLoading(out,'正在從台灣語料檢索並請 AI 回答…');
+  await loadFull();
+  const sources=aiRetrieve(q,6);
+  const ctx=sources.map(function(it,i){ return (i+1)+'. '+it.name+'（'+it.agency+'）'+(it.kw?'｜關鍵字：'+it.kw:''); }).join('\n');
+  const prompt='你是臺灣國小教學助理。請根據「臺灣主權 AI 訓練語料庫」中以下相關資料集，用繁體中文、貼近臺灣國小教學現場的口吻回答老師的問題。若這些資料不足以回答，請誠實說明並給一般性教學建議，絕不要編造不存在的資料或數據。\n\n【老師的問題】\n'+q+'\n\n【系統檢索到的相關語料集】\n'+(ctx||'（這次沒有檢索到高度相關的語料）')+'\n\n請依下列結構回答（繁體中文、口吻親切實用）：\n一、直接回答（3～5 句）\n二、可以怎麼教（1～2 個臺灣國小可行的教學點子）\n三、建議參考的語料集（從上面清單挑最相關的，用編號與名稱列出）';
+  try{
+    const text=await callGemini(key,prompt,1600);
+    const srcHTML=sources.length?'<div class="ai-src"><h4>📚 這次檢索到的台灣語料集（點擊看原始資料）</h4>'+sources.map(function(it){ return '<a href="'+DATASET_URL(it.id)+'" target="_blank" rel="noopener noreferrer">'+esc(it.name)+' <span class="ag">— '+esc(it.agency)+(it.open?' · 開放下載':'')+'</span></a>'; }).join('')+'</div>':'';
+    aiResult(out,text,srcHTML);
+  }catch(e){ aiError(out,e.message||'呼叫失敗'); }
+}
+async function runSheet(){
+  const out=document.getElementById('sh-out'); const key=getKey();
+  const topic=(document.getElementById('sh-topic').value||'').trim();
+  if(!topic){ toast('請先輸入主題'); return; }
+  if(!key){ aiError(out,'請先在上方設定 Gemini 金鑰。'); return; }
+  const grade=document.getElementById('sh-grade').value;
+  const domain=(document.getElementById('sh-domain').value||'').trim();
+  const extra=(document.getElementById('sh-extra').value||'').trim();
+  aiLoading(out,'AI 正在設計學習單…');
+  let mat='';
+  if(pick.length){ const lines=pick.slice(0,6).map(function(id){ var it=ITEM_BY_ID[id]; return it?('・'+it.name+'（'+it.agency+'）'):''; }).filter(Boolean); if(lines.length) mat='\n\n【老師備課清單中的台灣語料（可作為素材依據）】\n'+lines.join('\n'); }
+  const prompt='你是臺灣國小老師。請設計一份「學習單」，用繁體中文，適合臺灣國小'+grade+'學生，呼應 108 課綱精神。\n主題：'+topic+(domain?'\n領域：'+domain:'')+(extra?'\n老師補充：'+extra:'')+mat+'\n\n請輸出可直接印給學生使用的內容，包含：\n1. 學習目標（2～3 條）\n2. 引起動機（一個生活化的開場）\n3. 主要活動（2～3 個可操作的步驟）\n4. 學習單題目（3～5 題，至少一題開放思考）\n5. 延伸／回家任務（1 條）\n排版清楚、用語親切。';
+  try{ const text=await callGemini(key,prompt,4096); aiResult(out,text, pick.length?'<div class="ai-src"><h4>📚 已帶入你「備課清單」中的語料作為素材依據</h4></div>':''); }
+  catch(e){ aiError(out,e.message||'呼叫失敗'); }
+}
+async function runBook(){
+  const out=document.getElementById('bk-out'); const key=getKey();
+  const topic=(document.getElementById('bk-topic').value||'').trim();
+  if(!topic){ toast('請先輸入主題'); return; }
+  if(!key){ aiError(out,'請先在上方設定 Gemini 金鑰。'); return; }
+  const lang=document.getElementById('bk-lang').value;
+  const grade=document.getElementById('bk-grade').value;
+  const pages=document.getElementById('bk-pages').value;
+  const romanize = lang==='台語'?'台羅拼音':(lang==='客語'?'客語拼音':'注音');
+  aiLoading(out,'AI 正在創作繪本腳本…');
+  const langLine = lang==='國語' ? '語言：國語（繁體中文）' : ('雙語：每頁中文句子 + 對應的'+lang+'句子（用'+romanize+'標音）');
+  const prompt='你是臺灣本土語言繪本作家。請創作一個適合臺灣國小'+grade+'的繪本故事腳本，主題「'+topic+'」，共 '+pages+' 頁。'+langLine+'。故事要溫暖、貼近臺灣生活情境，結尾正向。\n\n每一頁請輸出：\n● 第 N 頁\n・畫面描述（給插畫師參考，一句）\n・中文句子（1～2 句，口語、適合朗讀）'+(lang==='國語'?'':('\n・'+lang+'句子（對應中文）\n・'+romanize+'（'+lang+'句子的標音）'))+'\n\n最後附上「給老師的話」：這個故事可以怎麼帶進課堂（2～3 句）。';
+  try{ const text=await callGemini(key,prompt,4096); aiResult(out,text, lang!=='國語'?'<div class="ai-src"><h4>🗣️ 提醒：'+lang+'用字與標音請對照教育部辭典再校正後使用</h4></div>':''); }
+  catch(e){ aiError(out,e.message||'呼叫失敗'); }
+}
+function initAI(){
+  renderKeyBar();
+  document.querySelectorAll('.ai-tab').forEach(function(tab){
+    tab.onclick=function(){
+      document.querySelectorAll('.ai-tab').forEach(function(t){ t.classList.toggle('on',t===tab); });
+      ['ai-qa','ai-sheet','ai-book'].forEach(function(id){ document.getElementById(id).hidden=(id!==tab.dataset.panel); });
+    };
+  });
+  document.getElementById('qa-go').onclick=function(){ withBusy(this,'思考中…',runQA); };
+  document.getElementById('sh-go').onclick=function(){ withBusy(this,'生成中…',runSheet); };
+  document.getElementById('bk-go').onclick=function(){ withBusy(this,'生成中…',runBook); };
+  document.querySelectorAll('#qa-quick button').forEach(function(b){ b.onclick=function(){ document.getElementById('qa-q').value=b.textContent; }; });
+}
+initAI();
+
 render();
 </script>
 
@@ -3712,7 +3945,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.1423';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.1439';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
