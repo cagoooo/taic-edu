@@ -296,6 +296,35 @@ a.ds__name:hover{color:var(--sea-deep)}
 .tp__dl{background:var(--deep);color:#fff;border-color:var(--deep)}
 .tp__dl:hover{color:#fff;opacity:.92}
 .tp__preview{display:none;white-space:pre-wrap;font:13px/1.75 system-ui,sans-serif;color:var(--ink);background:var(--sand);border-radius:10px;padding:14px 15px;margin-top:12px;max-height:360px;overflow:auto;border:1px solid var(--line)}
+/* ===== 師生共創工坊 (階段三) ===== */
+.cr-wrap{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-top:26px}
+.cr-types{display:flex;gap:7px;flex-wrap:wrap;padding:18px 22px;background:#eef8f7;border-bottom:1px solid var(--line)}
+.cr-type{border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:11px;padding:9px 15px;font:700 14px system-ui,sans-serif;cursor:pointer;transition:.15s}
+.cr-type:hover{border-color:var(--sea)}
+.cr-type.on{background:linear-gradient(135deg,#0ea5b7,#0a7d8c);color:#fff;border-color:transparent}
+.cr-body{padding:20px 22px 24px}
+.cr-prompt{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:12px}
+.cr-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.cr-opt{font-size:13.5px;color:var(--ink-soft);display:flex;align-items:center;gap:7px;cursor:pointer}
+.cr-opt input{width:16px;height:16px;accent-color:var(--sea-deep)}
+.cr-lang{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:inherit;font-size:14px;color:var(--ink);background:#fff}
+.cr-portfolio{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:18px 20px}
+.cr-pf-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.cr-pf-head b{font-size:16px}
+.cr-pf-head #cr-pf-count{color:var(--sea-deep)}
+.cr-pf-act button{font:700 12.5px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:9px;padding:7px 11px;cursor:pointer}
+.cr-pf-act button:hover{border-color:var(--sea);color:var(--sea-deep)}
+.cr-pf-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;margin-top:14px}
+.cr-pf-empty{color:var(--ink-soft);font-size:14px;padding:24px 6px;text-align:center;grid-column:1/-1;line-height:1.8}
+.cr-work{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:var(--sand)}
+.cr-work__top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cr-work__top b{font-size:14px;color:var(--ink)}
+.cr-work__kind{font-size:10.5px;font-weight:700;color:var(--sea-deep);background:var(--mist);padding:2px 8px;border-radius:999px;flex:none}
+.cr-work__body{font-size:12.5px;color:var(--ink-soft);line-height:1.7;white-space:pre-wrap;max-height:150px;overflow:auto;margin-top:8px;background:#fff;border-radius:8px;padding:9px 11px;word-break:break-word}
+.cr-work__act{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.cr-work__act button{font:600 11.5px system-ui,sans-serif;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;padding:5px 9px;cursor:pointer}
+.cr-work__act button:hover{border-color:var(--sea);color:var(--sea-deep)}
+.cr-work__act .cr-save{border-color:var(--gold);background:#fff7e6;color:#9a6b00}
 
 /* ===== ROADMAP ===== */
 .road{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px;counter-reset:p}
@@ -382,6 +411,7 @@ a.ds__name:hover{color:var(--sea-deep)}
       <a href="#roles">三方共學</a>
       <a href="#explore">語料探索</a>
       <a href="#ai">AI 助理</a>
+      <a href="#create">師生共創</a>
       <a href="#road">開發藍圖</a>
       <a href="#future">未來想像</a>
       <a href="#license">授權須知</a>
@@ -574,6 +604,41 @@ a.ds__name:hover{color:var(--sea-deep)}
       </div>
     </div>
     <p class="ai-note">⚠️ AI 生成內容僅供參考，請老師審閱後再使用；台語／客語標音可能需要校正。金鑰只存在你這台裝置的瀏覽器（localStorage），不會上傳、不會被別人看到，也不會寫進這個網站的程式碼。免費額度約每天 1500 次，一般班級使用綽綽有餘。</p>
+  </div>
+</section>
+
+<!-- 師生共創工坊 (階段三) -->
+<section id="create">
+  <div class="wrap">
+    <span class="eyebrow">階段三 · 師生共創</span>
+    <h2 class="title">🎨 師生共創工坊</h2>
+    <p class="lead">學生用台灣語料當養分，和 AI 一起創作在地故事、小詩、繪本與探究發現。作品存進「我的作品集」，還能匯出成「校本語料卡」交給老師收集——讓孩子的創作<b>回流成學校的在地素材</b>。</p>
+
+    <div class="cr-wrap">
+      <div class="cr-types" id="cr-types">
+        <button class="cr-type on" data-type="story">🏞️ 在地故事</button>
+        <button class="cr-type" data-type="poem">🌊 自然小詩</button>
+        <button class="cr-type" data-type="book">📖 我的繪本一頁</button>
+        <button class="cr-type" data-type="inquiry">🔍 探究發現</button>
+      </div>
+      <div class="cr-body">
+        <p class="cr-prompt" id="cr-prompt"></p>
+        <textarea class="ai-ta" id="cr-seed"></textarea>
+        <div class="cr-row">
+          <label class="cr-opt"><input type="checkbox" id="cr-useref"> 帶入我「備課清單」收藏的語料當依據</label>
+          <span id="cr-lang-wrap"><select class="cr-lang" id="cr-lang"><option selected>台語</option><option>客語</option><option>國語</option></select></span>
+        </div>
+        <button class="ai-go" id="cr-go">✦ 和 AI 一起創作</button>
+        <div class="ai-out" id="cr-out"></div>
+      </div>
+    </div>
+
+    <div class="cr-portfolio">
+      <div class="cr-pf-head"><b>📁 我的作品集 <span id="cr-pf-count">0</span></b><span class="cr-pf-act"><button id="cr-pf-export">⬇ 匯出全部作品</button></span></div>
+      <div class="cr-pf-list" id="cr-pf-list"></div>
+    </div>
+
+    <p class="ai-note">⚠️ 作品由 AI 協助生成，請師生一起潤飾後再使用；台語／客語標音可能需校正。作品存在這台裝置（localStorage），可匯出分享。未來接上學校共用後端，就能做「全班作品牆」、跨校分享，把優秀作品真正回流到校本語料庫。</p>
   </div>
 </section>
 
@@ -4259,6 +4324,92 @@ function renderTeachpack(key){
   document.getElementById('tp-prev').onclick=function(){ togglePackPreview(key); };
 }
 
+// ===== 階段三 師生共創工坊 =====
+const CREATE_TYPES={
+  story:{label:'在地故事',prompt:'寫下你家鄉的人、事、地、物（一兩句也可以），AI 會幫你寫成一篇小故事。',ph:'例：阿公的雜貨店門口有一棵很老的榕樹，夏天大家都在那邊乘涼、聊天…',lang:false,
+    build:function(seed,ref){return '你是溫暖的兒童文學作家。一位臺灣國小學生想把家鄉的故事寫成小故事，他/她提供的素材是：「'+seed+'」。'+ref+'請用繁體中文、溫暖生動、適合國小的口吻，寫成一篇 150～250 字的小故事，保留學生原本的觀察與情感，補上開頭、結尾與一點想像。最後加一句「小作家的話」鼓勵他/她。';}},
+  poem:{label:'自然小詩',prompt:'選一個你想寫的主題或感受，AI 會和你一起寫一首小詩。',ph:'例：下雨後的操場、海邊的風、外婆種的菜…',lang:true,
+    build:function(seed,ref,lang){return '請和一位臺灣國小學生共同創作一首關於「'+seed+'」的小詩，繁體中文、4～8 行、意象清新、貼近臺灣自然與生活、適合朗讀。'+ref+(lang&&lang!=='國語'?('最後再附一個'+lang+'版本，並用'+(lang==='台語'?'台羅':'客語')+'拼音標音。'):'');}},
+  book:{label:'我的繪本一頁',prompt:'描述你想畫的一個畫面，AI 會幫你補上句子。',ph:'例：一隻小海龜第一次游到海面上，看到夕陽染紅了整片海…',lang:true,
+    build:function(seed,ref,lang){return '一位臺灣國小學生描述了一個繪本畫面：「'+seed+'」。'+ref+'請幫他完成這一頁繪本，依序輸出：1) 潤飾後的畫面描述（一句）2) 中文句子（1～2 句口語、適合朗讀）'+(lang&&lang!=='國語'?('3) '+lang+'句子（對應中文）4) '+(lang==='台語'?'台羅拼音':'客語拼音')+'（'+lang+'句子的標音）'):'')+'。溫暖、有畫面感。';}},
+  inquiry:{label:'探究發現',prompt:'記錄你觀察或探究到的事情，AI 會幫你整理成發現報告。',ph:'例：我觀察校園的螞蟻，發現牠們都走同一條路線，下雨前特別忙…',lang:false,
+    build:function(seed,ref){return '一位臺灣國小學生做了探究，記錄如下：「'+seed+'」。'+ref+'請用學生第一人稱、繁體中文，幫他整理成一份「我的探究發現」小報告，分三段：「我發現了什麼」「我是怎麼知道的」「我還想問的問題」，語氣鼓勵好奇與觀察，結尾正向。';}},
+};
+let crType='story';
+let portfolio=[];
+try{ portfolio=JSON.parse(localStorage.getItem('taic_portfolio_v1')||'[]'); }catch(e){ portfolio=[]; }
+if(!Array.isArray(portfolio)) portfolio=[];
+function savePortfolio(){ try{ localStorage.setItem('taic_portfolio_v1', JSON.stringify(portfolio)); }catch(e){} }
+function addWork(type,typeLabel,title,content){
+  portfolio.unshift({ id:'w'+Date.now()+Math.floor(Math.random()*1000), type:type, kind:typeLabel, title:(title||typeLabel).slice(0,40), content:content||'', date:TODAY_ZH });
+  if(portfolio.length>60) portfolio=portfolio.slice(0,60);
+  savePortfolio(); renderPortfolio(); toast('已存進作品集');
+}
+function removeWork(id){ portfolio=portfolio.filter(function(w){ return w.id!==id; }); savePortfolio(); renderPortfolio(); }
+function workToCorpusCard(w){
+  return '【校本語料卡 · 師生共創】\n資料集名稱：'+w.title+'\n提供者：桃園市龍潭區石門國民小學 學生（共創作品）\n類型：'+w.kind+'\n關鍵字：師生共創；在地素材；'+w.kind+'\n建立日期：'+w.date+'\n--------\n'+w.content+'\n--------\n收錄建議：可作為「臺灣主權 AI 訓練語料庫」校本回流素材。\n製作：本土 AI 共學站 · 阿凱老師';
+}
+function renderPortfolio(){
+  var c=document.getElementById('cr-pf-count'); if(c) c.textContent=portfolio.length;
+  var box=document.getElementById('cr-pf-list'); if(!box) return;
+  if(!portfolio.length){ box.innerHTML='<div class="cr-pf-empty">還沒有作品。<br>上面選一個創作類型，和 AI 一起完成你的第一份作品吧！</div>'; return; }
+  box.innerHTML=portfolio.map(function(w){
+    return '<div class="cr-work"><div class="cr-work__top"><b>'+esc(w.title)+'</b><span class="cr-work__kind">'+esc(w.kind)+'</span></div>'+
+      '<div class="cr-work__body">'+esc(w.content)+'</div>'+
+      '<div class="cr-work__act"><button data-cpw="'+w.id+'">⧉ 複製</button><button class="cr-save" data-cardw="'+w.id+'">📤 校本語料卡</button><button data-rmw="'+w.id+'">✕ 移除</button></div></div>';
+  }).join('');
+  box.querySelectorAll('[data-cpw]').forEach(function(b){ b.onclick=function(){ var w=portfolio.filter(function(x){return x.id===b.getAttribute('data-cpw');})[0]; if(w) copyText(w.content).then(function(){toast('已複製作品');}); }; });
+  box.querySelectorAll('[data-cardw]').forEach(function(b){ b.onclick=function(){ var w=portfolio.filter(function(x){return x.id===b.getAttribute('data-cardw');})[0]; if(w) copyText(workToCorpusCard(w)).then(function(){toast('已複製校本語料卡（可貼給老師收集）');}); }; });
+  box.querySelectorAll('[data-rmw]').forEach(function(b){ b.onclick=function(){ removeWork(b.getAttribute('data-rmw')); }; });
+}
+function exportPortfolio(){
+  if(!portfolio.length){ toast('作品集是空的'); return; }
+  var lines=['本土 AI 共學站 — 我的作品集','匯出日期：'+TODAY_ZH+'｜共 '+portfolio.length+' 份','製作：桃園市龍潭區石門國民小學',''];
+  portfolio.forEach(function(w,i){ lines.push('────────'); lines.push((i+1)+'. ['+w.kind+'] '+w.title); lines.push(w.content); lines.push(''); });
+  var blob=new Blob([lines.join('\r\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='我的作品集_2026-06-04.txt';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(a.href);},800);
+  toast('已匯出作品集');
+}
+function crSetType(type){
+  crType=type;
+  document.querySelectorAll('.cr-type').forEach(function(b){ b.classList.toggle('on',b.dataset.type===type); });
+  var cfg=CREATE_TYPES[type];
+  document.getElementById('cr-prompt').textContent=cfg.prompt;
+  document.getElementById('cr-seed').placeholder=cfg.ph;
+  document.getElementById('cr-lang-wrap').style.display=cfg.lang?'':'none';
+  var o=document.getElementById('cr-out'); o.classList.remove('show'); o.innerHTML='';
+}
+function crResult(text, type){
+  var out=document.getElementById('cr-out');
+  out.innerHTML='<div class="ai-out__bar"><span class="ai-badge">✦ 與 AI 共創</span><button class="ai-out__save" id="cr-save-btn">📁 存進作品集</button><button class="ai-out__copy">⧉ 複製</button></div><div class="ai-text">'+esc(text)+'</div>';
+  out.classList.add('show');
+  out.querySelector('.ai-out__copy').onclick=function(){ copyText(text).then(function(){toast('已複製');}); };
+  document.getElementById('cr-save-btn').onclick=function(){ var seed=(document.getElementById('cr-seed').value||'').trim(); var title=seed.slice(0,18)||CREATE_TYPES[type].label; addWork(type,CREATE_TYPES[type].label,title,text); this.textContent='✓ 已存入作品集'; this.disabled=true; };
+}
+async function runCreate(){
+  var out=document.getElementById('cr-out'); var key=getKey();
+  var seed=(document.getElementById('cr-seed').value||'').trim();
+  if(!seed){ toast('先寫一點你的想法吧'); return; }
+  if(!key){ aiError(out,'要和 AI 一起創作，需要先到「AI 助理」區設定你的免費 Gemini 金鑰。'); return; }
+  var cfg=CREATE_TYPES[crType];
+  var lang=cfg.lang?document.getElementById('cr-lang').value:'';
+  aiLoading(out,'AI 正在和你一起創作…');
+  var ref='';
+  if(document.getElementById('cr-useref').checked && pick.length){ var lst=pick.slice(0,5).map(function(id){ var it=ITEM_BY_ID[id]; return it?('・'+it.name+'（'+it.agency+'）'):''; }).filter(Boolean); if(lst.length) ref='可參考以下臺灣語料作為背景依據（讓內容更貼近事實）：\n'+lst.join('\n')+'\n'; }
+  var prompt=cfg.build(seed, ref, lang);
+  try{ var text=await callGemini(key,prompt,2048); crResult(text, crType); }
+  catch(e){ aiError(out,e.message||'呼叫失敗'); }
+}
+function initCreate(){
+  document.querySelectorAll('.cr-type').forEach(function(b){ b.onclick=function(){ crSetType(b.dataset.type); }; });
+  crSetType('story');
+  document.getElementById('cr-go').onclick=function(){ withBusy(this,'創作中…',runCreate); };
+  document.getElementById('cr-pf-export').onclick=exportPortfolio;
+  renderPortfolio();
+}
+initCreate();
+
 render();
 </script>
 
@@ -4266,7 +4417,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.1736';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.1746';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
