@@ -543,7 +543,7 @@ a.ds__name:hover{color:var(--sea-deep)}
   <div class="wrap">
     <span class="eyebrow">階段二 · 本土 AI 教學助理</span>
     <h2 class="title">🤖 用台灣語料回答的 AI 助理</h2>
-    <p class="lead">問它問題，它會先從 <b>4554 筆台灣語料</b>找出相關資料當依據再回答，並標出引用來源；也能<b>一鍵生成學習單、台語繪本</b>。使用你<b>自己的免費 Gemini 金鑰</b>，只存在你的瀏覽器，不上傳、不共用。</p>
+    <p class="lead">問它問題，它會先從 <b>4554 筆台灣語料</b>找出相關資料當依據再回答，並標出引用來源；也能<b>一鍵生成學習單、台語繪本</b>。<b>免自備金鑰，直接免費使用</b>（學校共用 AI 額度，師生家長都能用）；老師若想免限額，也可在下方貼上自己的金鑰。</p>
 
     <div class="ai-wrap">
       <div class="ai-key" id="aiKeyBar"></div>
@@ -603,7 +603,7 @@ a.ds__name:hover{color:var(--sea-deep)}
         <div class="ai-out" id="mt-out"></div>
       </div>
     </div>
-    <p class="ai-note">⚠️ AI 生成內容僅供參考，請老師審閱後再使用；台語／客語標音可能需要校正。金鑰只存在你這台裝置的瀏覽器（localStorage），不會上傳、不會被別人看到，也不會寫進這個網站的程式碼。免費額度約每天 1500 次，一般班級使用綽綽有餘。</p>
+    <p class="ai-note">⚠️ AI 生成內容僅供參考，請老師審閱後再使用；台語／客語標音可能需校正。<b>本站 AI 由學校共用免費額度支援，師生家長免自備金鑰即可直接用</b>（每人每日有合理上限以保護共用額度）；老師若貼上自己的金鑰則改用自己的、不限額，金鑰只存在你這台裝置、不上傳。</p>
   </div>
 </section>
 
@@ -638,7 +638,7 @@ a.ds__name:hover{color:var(--sea-deep)}
       <div class="cr-pf-list" id="cr-pf-list"></div>
     </div>
 
-    <p class="ai-note">⚠️ 作品由 AI 協助生成，請師生一起潤飾後再使用；台語／客語標音可能需校正。作品存在這台裝置（localStorage），可匯出分享。未來接上學校共用後端，就能做「全班作品牆」、跨校分享，把優秀作品真正回流到校本語料庫。</p>
+    <p class="ai-note">⚠️ 作品由 AI 協助生成（免自備金鑰，學校共用額度支援），請師生一起潤飾後再使用；台語／客語標音可能需校正。作品存在這台裝置（localStorage），可匯出分享。<b>全班作品牆與跨校分享為下一步</b>（共用後端已就緒，作品牆即將開放）。</p>
   </div>
 </section>
 
@@ -3968,10 +3968,32 @@ function renderKeyBar(){
     document.getElementById('ai-clr').onclick=function(){ setKey(''); toast('已清除金鑰'); };
   }else{
     bar.className='ai-key';
-    bar.innerHTML='🔑 <input id="ai-keyin" type="password" autocomplete="off" placeholder="貼上你的免費 Gemini 金鑰（AIza…）"> <button class="save" id="ai-save">儲存</button> <a class="link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">免費取得金鑰 ↗</a>';
+    bar.innerHTML='<span style="color:#1c7d63;font-weight:600">✓ 免費直接用（學校共用額度，免自備金鑰）</span>　<span style="font-size:13px">想免限額用自己的金鑰？</span><input id="ai-keyin" type="password" autocomplete="off" placeholder="貼上 AIza…（可不填）"> <button class="save" id="ai-save">儲存</button> <a class="link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">取得金鑰 ↗</a>';
     document.getElementById('ai-save').onclick=function(){ var v=(document.getElementById('ai-keyin').value||'').trim(); if(!v){ toast('請先貼上金鑰'); return; } if(!/^AIza/.test(v) && !confirm('這把金鑰看起來不像 Gemini 金鑰（通常以 AIza 開頭），仍要儲存嗎？')) return; setKey(v); toast('金鑰已儲存（僅存本機）'); };
     document.getElementById('ai-keyin').addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('ai-save').click(); });
   }
+}
+// ===== 共用後端（免金鑰）：前端打 Supabase Edge Function，金鑰藏伺服器端 =====
+const AI_BACKEND = {
+  url: 'https://xcnmmaayrtiklntvhdhc.supabase.co/functions/v1/taic-ai',
+  anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhjbm1tYWF5cnRpa2xudHZoZGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NTU0NjQsImV4cCI6MjA5MjAzMTQ2NH0.Q5yCQHPtJBitKYucn-8jZqsIqkaSLmJVt1ZVse61qks'
+};
+async function callBackend(prompt, maxTokens){
+  let resp;
+  try{ resp=await fetch(AI_BACKEND.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_BACKEND.anon,'apikey':AI_BACKEND.anon},body:JSON.stringify({prompt:prompt,maxTokens:maxTokens||1024})}); }
+  catch(e){ throw new Error('連線 AI 後端失敗，請檢查網路。'); }
+  let data; try{ data=await resp.json(); }catch(e){ throw new Error('AI 後端回應異常，請稍後再試。'); }
+  if(data && data.error) throw new Error(data.error);
+  if(!resp.ok) throw new Error('AI 後端錯誤（'+resp.status+'）');
+  if(!data.text) throw new Error('AI 後端沒有回傳內容。');
+  return data.text;
+}
+// 有自帶金鑰 → 用老師自己的（不限額）；否則走共用後端（免金鑰）
+async function callAI(prompt, maxTokens){
+  const k=getKey();
+  if(k) return callGemini(k, prompt, maxTokens);
+  if(AI_BACKEND && AI_BACKEND.url) return callBackend(prompt, maxTokens);
+  throw new Error('AI 暫時無法使用，請稍候再試。');
 }
 async function callGemini(key, prompt, maxTokens){
   let lastErr=null;
@@ -4036,14 +4058,13 @@ async function runQA(){
   const out=document.getElementById('qa-out'); const key=getKey();
   const q=(document.getElementById('qa-q').value||'').trim();
   if(!q){ toast('請先輸入問題'); return; }
-  if(!key){ aiError(out,'請先在上方設定你的 Gemini 金鑰（免費，點「免費取得金鑰」即可申請）。'); return; }
   aiLoading(out,'正在從台灣語料檢索並請 AI 回答…');
   await loadFull();
   const sources=aiRetrieve(q,6);
   const ctx=sources.map(function(it,i){ return (i+1)+'. '+it.name+'（'+it.agency+'）'+(it.kw?'｜關鍵字：'+it.kw:''); }).join('\n');
   const prompt='你是臺灣國小教學助理。請根據「臺灣主權 AI 訓練語料庫」中以下相關資料集，用繁體中文、貼近臺灣國小教學現場的口吻回答老師的問題。若這些資料不足以回答，請誠實說明並給一般性教學建議，絕不要編造不存在的資料或數據。\n\n【老師的問題】\n'+q+'\n\n【系統檢索到的相關語料集】\n'+(ctx||'（這次沒有檢索到高度相關的語料）')+'\n\n請依下列結構回答（繁體中文、口吻親切實用）：\n一、直接回答（3～5 句）\n二、可以怎麼教（1～2 個臺灣國小可行的教學點子）\n三、建議參考的語料集（從上面清單挑最相關的，用編號與名稱列出）';
   try{
-    const text=await callGemini(key,prompt,1600);
+    const text=await callAI(prompt,1600);
     const srcHTML=sources.length?'<div class="ai-src"><h4>📚 這次檢索到的台灣語料集（點擊看原始資料）</h4>'+sources.map(function(it){ return '<a href="'+DATASET_URL(it.id)+'" target="_blank" rel="noopener noreferrer">'+esc(it.name)+' <span class="ag">— '+esc(it.agency)+(it.open?' · 開放下載':'')+'</span></a>'; }).join('')+'</div>':'';
     aiResult(out,text,srcHTML,{kind:'問答',title:q});
   }catch(e){ aiError(out,e.message||'呼叫失敗'); }
@@ -4052,7 +4073,6 @@ async function runSheet(){
   const out=document.getElementById('sh-out'); const key=getKey();
   const topic=(document.getElementById('sh-topic').value||'').trim();
   if(!topic){ toast('請先輸入主題'); return; }
-  if(!key){ aiError(out,'請先在上方設定 Gemini 金鑰。'); return; }
   const grade=document.getElementById('sh-grade').value;
   const domain=(document.getElementById('sh-domain').value||'').trim();
   const extra=(document.getElementById('sh-extra').value||'').trim();
@@ -4060,14 +4080,13 @@ async function runSheet(){
   let mat='';
   if(pick.length){ const lines=pick.slice(0,6).map(function(id){ var it=ITEM_BY_ID[id]; return it?('・'+it.name+'（'+it.agency+'）'):''; }).filter(Boolean); if(lines.length) mat='\n\n【老師備課清單中的台灣語料（可作為素材依據）】\n'+lines.join('\n'); }
   const prompt='你是臺灣國小老師。請設計一份「學習單」，用繁體中文，適合臺灣國小'+grade+'學生，呼應 108 課綱精神。\n主題：'+topic+(domain?'\n領域：'+domain:'')+(extra?'\n老師補充：'+extra:'')+mat+'\n\n請輸出可直接印給學生使用的內容，包含：\n1. 學習目標（2～3 條）\n2. 引起動機（一個生活化的開場）\n3. 主要活動（2～3 個可操作的步驟）\n4. 學習單題目（3～5 題，至少一題開放思考）\n5. 延伸／回家任務（1 條）\n排版清楚、用語親切。';
-  try{ const text=await callGemini(key,prompt,4096); aiResult(out,text, pick.length?'<div class="ai-src"><h4>📚 已帶入你「備課清單」中的語料作為素材依據</h4></div>':'', {kind:'學習單',title:'學習單：'+topic}); }
+  try{ const text=await callAI(prompt,4096); aiResult(out,text, pick.length?'<div class="ai-src"><h4>📚 已帶入你「備課清單」中的語料作為素材依據</h4></div>':'', {kind:'學習單',title:'學習單：'+topic}); }
   catch(e){ aiError(out,e.message||'呼叫失敗'); }
 }
 async function runBook(){
   const out=document.getElementById('bk-out'); const key=getKey();
   const topic=(document.getElementById('bk-topic').value||'').trim();
   if(!topic){ toast('請先輸入主題'); return; }
-  if(!key){ aiError(out,'請先在上方設定 Gemini 金鑰。'); return; }
   const lang=document.getElementById('bk-lang').value;
   const grade=document.getElementById('bk-grade').value;
   const pages=document.getElementById('bk-pages').value;
@@ -4075,7 +4094,7 @@ async function runBook(){
   aiLoading(out,'AI 正在創作繪本腳本…');
   const langLine = lang==='國語' ? '語言：國語（繁體中文）' : ('雙語：每頁中文句子 + 對應的'+lang+'句子（用'+romanize+'標音）');
   const prompt='你是臺灣本土語言繪本作家。請創作一個適合臺灣國小'+grade+'的繪本故事腳本，主題「'+topic+'」，共 '+pages+' 頁。'+langLine+'。故事要溫暖、貼近臺灣生活情境，結尾正向。\n\n每一頁請輸出：\n● 第 N 頁\n・畫面描述（給插畫師參考，一句）\n・中文句子（1～2 句，口語、適合朗讀）'+(lang==='國語'?'':('\n・'+lang+'句子（對應中文）\n・'+romanize+'（'+lang+'句子的標音）'))+'\n\n最後附上「給老師的話」：這個故事可以怎麼帶進課堂（2～3 句）。';
-  try{ const text=await callGemini(key,prompt,4096); aiResult(out,text, lang!=='國語'?'<div class="ai-src"><h4>🗣️ 提醒：'+lang+'用字與標音請對照教育部辭典再校正後使用</h4></div>':'', {kind:'繪本',title:lang+'繪本：'+topic}); }
+  try{ const text=await callAI(prompt,4096); aiResult(out,text, lang!=='國語'?'<div class="ai-src"><h4>🗣️ 提醒：'+lang+'用字與標音請對照教育部辭典再校正後使用</h4></div>':'', {kind:'繪本',title:lang+'繪本：'+topic}); }
   catch(e){ aiError(out,e.message||'呼叫失敗'); }
 }
 async function runMatch(){
@@ -4098,11 +4117,10 @@ async function runMatch(){
 }
 async function explainMatch(topic, grade, matched){
   const out=document.getElementById('mt-out'); const key=getKey();
-  if(!key){ aiError(out,'配對語料本身免金鑰；但「AI 說明」需要先在上方設定 Gemini 金鑰。'); return; }
   aiLoading(out,'AI 正在說明怎麼搭…');
   const list=matched.slice(0,8).map(function(it,i){ return (i+1)+'. '+it.name+'（'+it.agency+'）'; }).join('\n');
   const prompt='你是臺灣國小教學顧問。老師要教的單元／主題是「'+topic+'」'+(grade?'（'+grade+'）':'')+'。以下是從臺灣語料庫配對到的素材：\n'+list+'\n\n請用繁體中文條列說明：每一筆語料可以怎麼融入這個單元的教學（每筆 1～2 句具體用法），最後給一個約 30 分鐘的簡單教學流程建議。';
-  try{ const text=await callGemini(key,prompt,2048); aiResult(out,text,'',{kind:'課綱配對',title:'配對：'+topic}); }
+  try{ const text=await callAI(prompt,2048); aiResult(out,text,'',{kind:'課綱配對',title:'配對：'+topic}); }
   catch(e){ aiError(out,e.message||'呼叫失敗'); }
 }
 function initAI(){
@@ -4391,14 +4409,13 @@ async function runCreate(){
   var out=document.getElementById('cr-out'); var key=getKey();
   var seed=(document.getElementById('cr-seed').value||'').trim();
   if(!seed){ toast('先寫一點你的想法吧'); return; }
-  if(!key){ aiError(out,'要和 AI 一起創作，需要先到「AI 助理」區設定你的免費 Gemini 金鑰。'); return; }
   var cfg=CREATE_TYPES[crType];
   var lang=cfg.lang?document.getElementById('cr-lang').value:'';
   aiLoading(out,'AI 正在和你一起創作…');
   var ref='';
   if(document.getElementById('cr-useref').checked && pick.length){ var lst=pick.slice(0,5).map(function(id){ var it=ITEM_BY_ID[id]; return it?('・'+it.name+'（'+it.agency+'）'):''; }).filter(Boolean); if(lst.length) ref='可參考以下臺灣語料作為背景依據（讓內容更貼近事實）：\n'+lst.join('\n')+'\n'; }
   var prompt=cfg.build(seed, ref, lang);
-  try{ var text=await callGemini(key,prompt,2048); crResult(text, crType); }
+  try{ var text=await callAI(prompt,2048); crResult(text, crType); }
   catch(e){ aiError(out,e.message||'呼叫失敗'); }
 }
 function initCreate(){
@@ -4417,7 +4434,7 @@ render();
 <script>
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var APP_VERSION='2026.06.04.1746';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
+  var APP_VERSION='2026.06.04.1950';   // 與 sw.js 的 BUILD_VERSION 同步（bump-version.ps1 會一起改）
   var reloaded=false;
   function showBar(waiting){
     if(document.getElementById('sw-update-bar')) return;
